@@ -17,7 +17,7 @@ setup(
     namespace_packages=['ckanext', 'ckanext.ssm'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=[],
+    install_requires=['boto3', 'six'],
     entry_points=\
     """
     [ckan.plugins]
