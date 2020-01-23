@@ -21,6 +21,6 @@ setup(
     entry_points=\
     """
     [ckan.plugins]
-    ssm-config=ckanext.ssm.plugin:SSMConfigPlugin
+    ssm_config=ckanext.ssm.plugin:SSMConfigPlugin
     """,
 )
