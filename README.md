@@ -9,7 +9,7 @@ Queensland Government has developed this plugin to be used with data.qld.gov.au 
 * Config values with SSM Parameter Store placeholders, ${ssm:/path/to/value}, will be replaced at runtime.
 
 #Requirements
-* None
+* boto3
 
 #Configuration
 ```
