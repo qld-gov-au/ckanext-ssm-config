@@ -13,7 +13,7 @@ Queensland Government has developed this plugin to be used with data.qld.gov.au 
 
 #Configuration
 ```
-ckan.plugins = ssm-config
+ckan.plugins = ssm_config
 ```
 
 # Development
