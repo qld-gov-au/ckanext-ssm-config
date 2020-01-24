@@ -18,22 +18,47 @@ Queensland Government has developed this plugin to be used with data.qld.gov.au 
 ckan.plugins = ssm_config
 ```
 
+IAM permissions similar to the following are needed:
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "ssm:GetParameter",
+                "ssm:GetParameters",
+                "ssm:GetParametersByPath"
+            ],
+            "Resource": [
+                "arn:aws:ssm:*:*:parameter/config/CKAN/default/",
+                "arn:aws:ssm:*:*:parameter/config/CKAN/default/*",
+            ],
+            "Effect": "Allow"
+        }
+    ]
+}
+```
+
 Optional:
 
 ```
 ckanext.ssm_config.region_name = <region>
 ckanext.ssm_config.prefix = /path/to/config/
+ckanext.ssm_config.aws_access_key_id = abcde
+ckanext.ssm_config.aws_secret_access_key = ABCDE
 ```
 
-If the region is not configured, the extension will attempt to query AWS metadata to determine the
-region of the machine where CKAN is running. If this lookup fails, the extension will do nothing.
+If ``region_name`` is not configured, the extension will attempt to query AWS metadata to determine
+the region of the machine where CKAN is running.
 
-If a prefix is configured, the extension will attempt to load all parameters under this prefix as
-config entries, with slashes being converted to dots.
+If ``prefix`` is configured, the extension will attempt to load all parameters under this prefix as
+config entries, with slashes being converted to dots. For example, if the prefix is set to
+`` /CKAN/ssm/``, and the SSM Parameter Store contains the key ``/CKAN/ssm/sqlalchemy/url``, then
+the extension will populate ``config['sqlalchemy.url']`` with the SSM value.
 
-For example, if the prefix is set to /CKAN/ssm/, and the SSM Parameter Store contains the key
-``/CKAN/ssm/sqlalchemy/url``, then the extension will populate ``config['sqlalchemy.url']``
-with the SSM value.
+If ``aws_access_key_id`` and ``aws_secret_access_key`` are not configured, the extension will
+proceed on the assumption that permissions are being managed through an EC2 instance role.
 
 # Development
 
