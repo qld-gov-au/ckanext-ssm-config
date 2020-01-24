@@ -62,7 +62,7 @@ class SSMConfigPlugin(SingletonPlugin):
             return False
 
 
-    def _populate_config_entries(self, config, prefix):
+    def _populate_config_entries(self, config, prefix, next_token=None):
         """Retrieve all SSM parameters under 'prefix' and convert them into config entries.
         """
         if not prefix.endswith('/'):
@@ -70,7 +70,11 @@ class SSMConfigPlugin(SingletonPlugin):
 
         LOG.debug('Converting all SSM parameters under %s to config entries', prefix)
         try:
-            parameters = self.client.get_parameters_by_path(Path=prefix, Recursive=True, WithDecryption=True)['Parameters']
+            if next_token:
+                parameter_search = self.client.get_parameters_by_path(Path=prefix, Recursive=True, WithDecryption=True, NextToken=next_token)
+            else:
+                parameter_search = self.client.get_parameters_by_path(Path=prefix, Recursive=True, WithDecryption=True)
+            parameters = parameter_search['Parameters']
         except Exception, e:
             LOG.warn("Failed to retrieve parameter tree %s: %s", prefix, e)
             return
@@ -80,6 +84,9 @@ class SSMConfigPlugin(SingletonPlugin):
             config_value = parameter['Value']
             LOG.debug("Populating %s from SSM", config_key)
             config[config_key] = config_value
+
+        if 'NextToken' in parameter_search:
+            self._populate_config_entries(config, prefix, parameter_search['NextToken'])
 
 
     def _replace_config_value(self, config, key):
