@@ -34,11 +34,41 @@ class SSMConfigPlugin(SingletonPlugin):
                 return config
         LOG.info('Retrieving SSM parameters from region %s', region_name)
         self.client = boto3.client('ssm', region_name)
+
+        prefix = config.get('ckanext.ssm_config.prefix', None)
+        if prefix:
+            config = self._populate_config_entries(config, prefix)
+
         for key in config:
             self._replace_config_value(config, key)
         return config
 
+    def _populate_config_entries(self, config, prefix):
+        """Retrieve all SSM parameters under 'prefix' and convert them into config entries.
+        """
+        if not prefix.endswith('/'):
+            prefix += '/'
+
+        LOG.debug('Converting all SSM parameters under %s to config entries', prefix)
+        try:
+            parameter_names = []
+            parameter_search = self.client.describe_parameters(ParameterFilters=[{'Key': 'Path', 'Option': 'Recursive', 'Values': [prefix]}])['Parameters']
+            for parameter in parameter_search:
+                parameter_names.append(parameter['Name'])
+            parameters = self.client.get_parameters(Names=parameter_names, WithDecryption=True)['Parameters']
+        except Exception, e:
+            LOG.warn("Failed to retrieve parameter tree %s: %s", prefix, e)
+            return
+
+        for parameter in parameters:
+            config_key = parameter['Name'].replace(prefix, '').replace('/', '.')
+            config_value = parameter['Value']
+            LOG.debug("Populating %s from SSM", config_key)
+            config[config_key] = config_value
+
     def _replace_config_value(self, config, key):
+        """Replace any SSM placeholders in a config entry.
+        """
         orig_value = config[key]
         if isinstance(orig_value, six.string_types) and r'${ssm:' in orig_value:
             matches = SSM_PARAMETER_SYNTAX.findall(orig_value)

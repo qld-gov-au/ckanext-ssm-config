@@ -21,10 +21,18 @@ Optional:
 
 ```
 ckanext.ssm_config.region_name = <region>
+ckanext.ssm_config.prefix = /path/to/config/
 ```
 
 If the region is not configured, the extension will attempt to query AWS metadata to determine the
 region of the machine where CKAN is running. If this lookup fails, the extension will do nothing.
+
+If a prefix is configured, the extension will attempt to load all parameters under this prefix as
+config entries, with slashes being converted to dots.
+
+For example, if the prefix is set to /CKAN/ssm/, and the SSM Parameter Store contains the key
+``/CKAN/ssm/sqlalchemy/url``, then the extension will populate ``config['sqlalchemy.url']``
+with the SSM value.
 
 # Development
 
