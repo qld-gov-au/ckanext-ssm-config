@@ -31,8 +31,8 @@ IAM permissions similar to the following are needed:
                 "ssm:GetParametersByPath"
             ],
             "Resource": [
-                "arn:aws:ssm:*:*:parameter/config/CKAN/default/",
-                "arn:aws:ssm:*:*:parameter/config/CKAN/default/*",
+                "arn:aws:ssm:*:*:parameter/CKAN/config/",
+                "arn:aws:ssm:*:*:parameter/CKAN/config/*",
             ],
             "Effect": "Allow"
         }
@@ -44,7 +44,7 @@ Optional:
 
 ```
 ckanext.ssm_config.region_name = <region>
-ckanext.ssm_config.prefix = /path/to/config/
+ckanext.ssm_config.prefix = /CKAN/config/
 ckanext.ssm_config.aws_access_key_id = abcde
 ckanext.ssm_config.aws_secret_access_key = ABCDE
 ```
@@ -54,7 +54,7 @@ the region of the machine where CKAN is running.
 
 If ``prefix`` is configured, the extension will attempt to load all parameters under this prefix as
 config entries, with slashes being converted to dots. For example, if the prefix is set to
-`` /CKAN/ssm/``, and the SSM Parameter Store contains the key ``/CKAN/ssm/sqlalchemy/url``, then
+`` /CKAN/config/``, and the SSM Parameter Store contains the key ``/CKAN/config/sqlalchemy/url``, then
 the extension will populate ``config['sqlalchemy.url']`` with the SSM value.
 
 If ``aws_access_key_id`` and ``aws_secret_access_key`` are not configured, the extension will
