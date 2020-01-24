@@ -51,11 +51,7 @@ class SSMConfigPlugin(SingletonPlugin):
 
         LOG.debug('Converting all SSM parameters under %s to config entries', prefix)
         try:
-            parameter_names = []
-            parameter_search = self.client.describe_parameters(ParameterFilters=[{'Key': 'Path', 'Option': 'Recursive', 'Values': [prefix]}])['Parameters']
-            for parameter in parameter_search:
-                parameter_names.append(parameter['Name'])
-            parameters = self.client.get_parameters(Names=parameter_names, WithDecryption=True)['Parameters']
+            parameters = self.client.get_parameters_by_path(Path=prefix, Recursive=True, WithDecryption=True)['Parameters']
         except Exception, e:
             LOG.warn("Failed to retrieve parameter tree %s: %s", prefix, e)
             return
