@@ -9,6 +9,7 @@ import six
 from logging import getLogger
 
 import boto3
+import boto.utils
 
 from ckan.plugins import implements, SingletonPlugin, IConfigurer
 
@@ -23,7 +24,16 @@ class SSMConfigPlugin(SingletonPlugin):
     def update_config(self, config):
         """Replace any values containing SSM references
         """
-        self.client = boto3.client('ssm', region_name='ap-southeast-2')
+        region_name = config.get('ckanext.ssm_config.region_name', None)
+        if not region_name:
+            LOG.info('ckanext.ssm_config.region_name not found; attempting to auto-detect region')
+            try:
+                region_name = boto.utils.get_instance_identity()['document']['region']
+            except Exception:
+                LOG.warn("Unable to determine AWS region; please specify 'ckanext.ssm_config.region_name'. Parameters will NOT be interpolated from SSM!")
+                return config
+        LOG.info('Retrieving SSM parameters from region %s', region_name)
+        self.client = boto3.client('ssm', region_name)
         for key in config:
             self._replace_config_value(config, key)
         return config

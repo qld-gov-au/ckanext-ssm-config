@@ -9,12 +9,22 @@ Queensland Government has developed this plugin to be used with data.qld.gov.au 
 * Config values with SSM Parameter Store placeholders, ${ssm:/path/to/value}, will be replaced at runtime.
 
 #Requirements
+* boto
 * boto3
 
 #Configuration
 ```
 ckan.plugins = ssm_config
 ```
+
+Optional:
+
+```
+ckanext.ssm_config.region_name = <region>
+```
+
+If the region is not configured, the extension will attempt to query AWS metadata to determine the
+region of the machine where CKAN is running. If this lookup fails, the extension will do nothing.
 
 # Development
 
