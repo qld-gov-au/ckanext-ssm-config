@@ -1,13 +1,13 @@
 from setuptools import setup, find_packages
 
-version='@BUILD-LABEL@'
+version = '@BUILD-LABEL@'
 
 setup(
     name='ckanext-ssm-config',
     version=version,
-    description='Interpolates Amazon SSM Parameter Store values into CKAN config',
+    description='Imports Amazon SSM Parameter Store values into CKAN config',
     long_description='',
-    classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=[],
     keywords='',
     author='Digital Applications',
     author_email='qol.development@smartservice.qld.gov.au',
@@ -17,10 +17,9 @@ setup(
     namespace_packages=['ckanext', 'ckanext.ssm'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=['boto3', 'six'],
-    entry_points=\
-    """
+    install_requires=['boto', 'boto3', 'six'],
+    entry_points="""
     [ckan.plugins]
-    ssm-config=ckanext.ssm.plugin:SSMConfigPlugin
+    ssm_config=ckanext.ssm.plugin:SSMConfigPlugin
     """,
 )
