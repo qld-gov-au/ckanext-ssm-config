@@ -11,7 +11,6 @@ setup(
     keywords='',
     author='Digital Applications',
     author_email='qol.development@smartservice.qld.gov.au',
-    url='',
     license='',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     namespace_packages=['ckanext', 'ckanext.ssm'],

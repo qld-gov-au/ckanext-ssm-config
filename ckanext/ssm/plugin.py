@@ -98,7 +98,7 @@ class SSMConfigPlugin(SingletonPlugin):
 
         for parameter in parameters:
             config_key = parameter['Name']\
-                    .replace(prefix, '').replace('/', '.')
+                .replace(prefix, '').replace('/', '.')
             config_value = parameter['Value']
             LOG.debug("Populating %s from SSM", config_key)
             config[config_key] = config_value
