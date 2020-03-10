@@ -10,7 +10,6 @@ Queensland Government has developed this plugin to be used with data.qld.gov.au 
 * All SSM parameters under a prefix can be automatically converted into config entries.
 
 #Requirements
-* boto
 * boto3
 
 #Configuration

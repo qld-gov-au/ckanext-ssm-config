@@ -13,10 +13,10 @@ setup(
     author_email='qol.development@smartservice.qld.gov.au',
     license='',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-    namespace_packages=['ckanext', 'ckanext.ssm'],
+    namespace_packages=['ckanext'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=['boto', 'boto3', 'six'],
+    install_requires=['boto3', 'six'],
     entry_points="""
     [ckan.plugins]
     ssm_config=ckanext.ssm.plugin:SSMConfigPlugin
