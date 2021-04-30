@@ -4,17 +4,28 @@ This provides Amazon SSM Parameter Store interpolations into config values.
 """
 
 import re
+import requests
 import six
 
 from logging import getLogger
 
 import boto3
-from boto.utils import get_instance_identity
 
 from ckan.plugins import implements, SingletonPlugin, IConfigurer
 
 LOG = getLogger(__name__)
 SSM_PARAMETER_SYNTAX = re.compile(r'[$][{]ssm:(/[-a-zA-Z0-9_./]+)[}]')
+
+
+def get_instance_identity_document():
+    token = requests.put(
+        'http://169.254.169.254/latest/api/token',
+        headers={'X-aws-ec2-metadata-token-ttl-seconds': '60'}
+    ).text
+    return requests.get(
+        'http://169.254.169.254/latest/dynamic/instance-identity/document',
+        headers={'X-aws-ec2-metadata-token': token}
+    ).json()
 
 
 class SSMConfigPlugin(SingletonPlugin):
@@ -48,10 +59,10 @@ class SSMConfigPlugin(SingletonPlugin):
         if not region_name:
             LOG.debug('region_name not found; attempting to auto-detect')
             try:
-                region_name = get_instance_identity()['document']['region']
-            except Exception:
-                LOG.warn("""Unable to determine AWS region;
-                please specify 'ckanext.ssm_config.region_name'.""")
+                region_name = get_instance_identity_document()['region']
+            except Exception as e:
+                LOG.warn("""Unable to determine AWS region due to %s;
+                please specify 'ckanext.ssm_config.region_name'.""", e)
                 return False
 
         LOG.info('Retrieving SSM parameters from region %s', region_name)
@@ -60,7 +71,7 @@ class SSMConfigPlugin(SingletonPlugin):
                                        aws_access_key_id=access_key,
                                        aws_secret_access_key=secret_key)
             return self.client
-        except Exception, e:
+        except Exception as e:
             LOG.error('Failed to initialise SSM Parameter Store client: %s', e)
             return False
 
@@ -92,7 +103,7 @@ class SSMConfigPlugin(SingletonPlugin):
                     WithDecryption=True
                 )
             parameters = parameter_search['Parameters']
-        except Exception, e:
+        except Exception as e:
             LOG.warn("Failed to retrieve parameter tree %s: %s", prefix, e)
             return
 
@@ -126,6 +137,6 @@ class SSMConfigPlugin(SingletonPlugin):
                         r'${ssm:' + match + '}',
                         parameter_value
                     )
-                except Exception, e:
+                except Exception as e:
                     LOG.warn("Unable to retrieve %s from SSM: %s", match, e)
             config[key] = new_value
