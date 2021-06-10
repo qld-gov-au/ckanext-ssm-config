@@ -1,6 +1,7 @@
-Version 0.1
-
-#ckanext-ssm-config - Amazon SSM Config CKAN Extension
+[![Tests](https://github.com/qld-gov-au/ckanext-ssm-config/actions/workflows/test.yml/badge.svg)](https://github.com/qld-gov-au/ckanext-ssm-config/actions/workflows/test.yml)
+================
+ckanext-ssm-config - Amazon SSM Config CKAN Extension
+================
 
 #About
 Queensland Government has developed this plugin to be used with data.qld.gov.au and publications.qld.gov.au.
