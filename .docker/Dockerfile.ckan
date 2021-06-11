@@ -28,12 +28,10 @@ RUN . ${VENV_DIR}/bin/activate \
 
 COPY .docker/test.ini $CKAN_INI
 
-COPY .docker/scripts ${APP_DIR}/scripts
+# Add current extension and files.
+COPY . ${APP_DIR}/
 
 COPY .docker/scripts/ckan_cli ${VENV_DIR}/bin/
-
-# Add current extension and files.
-COPY ckanext test *requirements*.txt setup.* .flake8 ${APP_DIR}/
 
 RUN chmod +x ${APP_DIR}/scripts/*.sh\
     && chmod +x ${VENV_DIR}/bin/ckan_cli
