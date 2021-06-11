@@ -7,7 +7,9 @@ set -e
 
 CKAN_ACTION_URL=http://ckan:3000/api/action
 
-. ${APP_DIR}/bin/activate
+if [ "$VENV_DIR" != "" ]; then
+  . ${VENV_DIR}/bin/activate
+fi
 
 # We know the "admin" sysadmin account exists, so we'll use her API KEY to create further data
 API_KEY=$(ckan_cli user admin | tr -d '\n' | sed -r 's/^(.*)apikey=(\S*)(.*)/\2/')
@@ -26,4 +28,6 @@ package_owner_org_update=$( \
 )
 echo ${package_owner_org_update}
 
-deactivate
+if [ "$VENV_DIR" != "" ]; then
+  deactivate
+fi
