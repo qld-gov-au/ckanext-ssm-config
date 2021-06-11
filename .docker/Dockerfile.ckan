@@ -23,8 +23,8 @@ RUN . ${VENV_DIR}/bin/activate \
     && pip install -r "${VENV_DIR}/src/ckan/requirements.txt" \
     && ln -s "${VENV_DIR}/src/ckan/who.ini" "${VENV_DIR}/who.ini" \
     && deactivate \
-    && ln -s ${VENV_DIR}/ckan /usr/lib/ckan \
-    && fix-permissions ${VENV_DIR}/ckan
+    && ln -s ${APP_DIR}/ckan /usr/lib/ckan \
+    && fix-permissions ${APP_DIR}/ckan
 
 COPY .docker/test.ini $CKAN_INI
 
