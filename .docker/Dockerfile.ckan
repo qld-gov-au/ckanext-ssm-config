@@ -31,6 +31,8 @@ COPY .docker/test.ini $CKAN_INI
 # Add current extension and files.
 COPY . ${APP_DIR}/
 
+COPY .docker/scripts ${APP_DIR}/
+
 COPY .docker/scripts/ckan_cli ${VENV_DIR}/bin/
 
 RUN chmod +x ${APP_DIR}/scripts/*.sh\
