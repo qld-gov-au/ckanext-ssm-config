@@ -36,7 +36,7 @@ COPY .docker/scripts/ckan_cli ${VENV_DIR}/bin/
 COPY ckanext test *requirements*.txt setup.* .flake8 ${APP_DIR}/
 
 RUN chmod +x ${APP_DIR}/scripts/*.sh\
-    && chmod +x ${APP_DIR}/bin/ckan_cli
+    && chmod +x ${VENV_DIR}/bin/ckan_cli
 
 # Init current extension.
 RUN ${APP_DIR}/scripts/init-ext.sh
