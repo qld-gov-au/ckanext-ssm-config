@@ -16,7 +16,7 @@ REMOTE_CHROME_URL = 'http://chrome:4444/wd/hub'
 
 # @see .docker/scripts/init.sh for credentials.
 PERSONAS = {
-    'Admin': {
+    'SysAdmin': {
         'name': u'admin',
         'email': u'admin@localhost',
         'password': u'Password123!'

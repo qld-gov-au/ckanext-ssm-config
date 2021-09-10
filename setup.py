@@ -40,7 +40,6 @@ setup(
         'Programming Language :: Python :: 3',
     ],
 
-
     # What does your project relate to?
     keywords='CKAN',
 
@@ -49,7 +48,9 @@ setup(
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     namespace_packages=['ckanext'],
 
-    install_requires=['boto3', 'six'],
+    install_requires=[
+        # -*- Extra requirements: -*-
+    ],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
