@@ -109,6 +109,13 @@ commands:
       ahoy cli "flake8 ${@:-ckanext}" || \
       [ "${ALLOW_LINT_FAIL:-0}" -eq 1 ]
 
+  copy-local-files:
+    usage: Update files from local repo.
+    cmd: |
+      docker cp . $(docker-compose ps -q ckan):/app/
+      docker cp .docker/scripts/ckan_cli $(docker-compose ps -q ckan):/app/ckan/default/bin/
+      ahoy cli 'chmod u+x $VENV_DIR/bin/ckan_cli; cp .docker/test.ini $CKAN_INI'
+
   test-unit:
     usage: Run unit tests.
     cmd: |
@@ -118,7 +125,7 @@ commands:
   test-bdd:
     usage: Run BDD tests.
     cmd: |
-      ahoy cli "behave ${*:-test/features}" || \
+      ahoy cli "behave -k ${*:-test/features}" || \
       [ "${ALLOW_BDD_FAIL:-0}" -eq 1 ]
 
   # Utilities.
@@ -152,7 +159,7 @@ entrypoint:
   - "-c"
   - "-e"
   - |
-    export LAGOON_LOCALDEV_URL=http://ckanext-ssm-config.docker.amazee.io
+    export LAGOON_LOCALDEV_URL=http://$PROJECT.docker.amazee.io
     [ -f .env ] && [ -s .env ] && export $(grep -v '^#' .env | xargs) && if [ -f .env.local ] && [ -s .env.local ]; then export $(grep -v '^#' .env.local | xargs); fi
     bash -e -c "$0" "$@"
   - "{{cmd}}"
