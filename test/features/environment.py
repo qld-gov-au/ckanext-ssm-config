@@ -20,6 +20,11 @@ PERSONAS = {
         'name': u'admin',
         'email': u'admin@localhost',
         'password': u'Password123!'
+    },
+    'Unauthenticated': {
+        'name': u'',
+        'email': u'',
+        'password': u''
     }
 }
 
