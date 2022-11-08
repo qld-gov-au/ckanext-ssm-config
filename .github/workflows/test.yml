@@ -7,7 +7,20 @@ on:
       - master
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install requirements
+        run: pip install flake8 pycodestyle
+      - name: Check syntax
+        run: flake8
+
   test:
+    needs: lint
     strategy:
       fail-fast: false
       matrix:
@@ -19,7 +32,7 @@ jobs:
 
     name: Continuous Integration build on CKAN ${{ matrix.ckan-version }} ${{ matrix.python-version }}
     runs-on: ubuntu-latest
-    container: integratedexperts/ci-builder
+    container: drevops/ci-builder
     env:
       CKAN_REPO: qld-gov-au/ckan
       CKAN_VERSION: ${{ matrix.ckan-version }}
