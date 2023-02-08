@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '@BUILD-LABEL@'
+version = '0.0.2'
 
 setup(
     name='ckanext-ssm-config',
