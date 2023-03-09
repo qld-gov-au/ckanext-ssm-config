@@ -7,11 +7,17 @@ dockerize -wait tcp://redis:6379 -timeout 1m
 
 sed -i "s@SITE_URL@${SITE_URL}@g" $CKAN_INI
 
-if [ "$VENV_DIR" != "" ]; then
-  . ${VENV_DIR}/bin/activate
-fi
+for i in {1..60}; do
+    if (PGPASSWORD=pass psql -h postgres -U ckan_default -d ckan_test -c "\q"); then
+        break
+    else
+        sleep 1
+    fi
+done
+
+. ${APP_DIR}/scripts/activate
 if (which ckan > /dev/null); then
-    ckan -c ${CKAN_INI} run -r
+    ckan -c ${CKAN_INI} run -r -t
 else
     paster serve ${CKAN_INI}
 fi
