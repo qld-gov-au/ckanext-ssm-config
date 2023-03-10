@@ -1,7 +1,7 @@
 version: '2.3'
 
 x-project:
-  &project ckanext-ssm-config
+  &project "${PROJECT}"
 
 x-volumes:
   &default-volumes
@@ -16,20 +16,12 @@ x-environment:
   AMAZEEIO: AMAZEEIO
   no_proxy: "ckan,postgres,postgres-datastore,redis,solr,chrome,mailhog.docker.amazee.io"
 
-x-user:
-  &default-user
-  # The default user under which the containers should run.
-  # Change this if you are on linux and run with another user than id `1000`.
-  user: '1000'
-
 services:
 
   ckan:
     build:
       context: .
       dockerfile: .docker/Dockerfile.ckan
-      args:
-        SITE_URL: http://ckanext-ssm-config.docker.amazee.io
     depends_on:
       - postgres
       - solr
@@ -37,29 +29,27 @@ services:
       - amazeeio-network
       - default
     ports:
-      - "3000"
+      - "5000"
     image: *project
     <<: *default-volumes
     environment:
       <<: *default-environment
-      AMAZEEIO_HTTP_PORT: 3000
-      LAGOON_LOCALDEV_URL: http://ckanext-ssm-config.docker.amazee.io
-      AMAZEEIO_URL: ckanext-ssm-config.docker.amazee.io
+      AMAZEEIO_HTTP_PORT: 5000
+      LAGOON_LOCALDEV_URL: "http://${PROJECT}.docker.amazee.io"
+      AMAZEEIO_URL: "${PROJECT}.docker.amazee.io"
 
   postgres:
-    image: amazeeio/postgres-ckan
+    image: ckan/ckan-postgres-dev:${CKAN_VERSION}
     ports:
       - "5432"
     networks:
       - amazeeio-network
       - default
-    <<: *default-user
     environment:
       <<: *default-environment
 
   redis:
-    image: amazeeio/redis
-    <<: *default-user
+    image: redis:6-alpine
     environment:
       <<: *default-environment
     networks:
@@ -67,10 +57,7 @@ services:
       - default
 
   solr:
-    build:
-      context: .
-      dockerfile: .docker/Dockerfile.solr
-    user: '8983'
+    image: ckan/ckan-solr-dev:${CKAN_VERSION}
     ports:
       - "8983"
     environment:
@@ -85,7 +72,6 @@ services:
     depends_on:
       - ckan
     <<: *default-volumes
-    <<: *default-user
     environment:
       <<: *default-environment
     networks:
