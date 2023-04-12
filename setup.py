@@ -17,7 +17,7 @@ setup(
     url='https://github.com/qld-gov-au/ckanext-ssm-config',
 
     # Author details
-    author='Digital Applications',
+    author='Queensland Online',
     author_email='qol.development@smartservice.qld.gov.au',
 
     # Choose your license
@@ -49,7 +49,10 @@ setup(
     namespace_packages=['ckanext'],
 
     install_requires=[
-        # -*- Extra requirements: -*-
+        # CKAN extensions should not list dependencies here, but in a separate
+        # ``requirements.txt`` file.
+        #
+        # http://docs.ckan.org/en/latest/extensions/best-practices.html#add-third-party-libraries-to-requirements-txt
     ],
 
     # If there are data files included in your packages that need to be
