@@ -17,7 +17,7 @@ setup(
     url='https://github.com/qld-gov-au/ckanext-ssm-config',
 
     # Author details
-    author='Digital Applications',
+    author='Queensland Online',
     author_email='qol.development@smartservice.qld.gov.au',
 
     # Choose your license
