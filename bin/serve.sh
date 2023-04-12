@@ -15,7 +15,7 @@ for i in {1..60}; do
     fi
 done
 
-. ${APP_DIR}/scripts/activate
+. ${APP_DIR}/bin/activate
 if (which ckan > /dev/null); then
     ckan -c ${CKAN_INI} run -r -t
 else

@@ -25,19 +25,16 @@ install_requirements () {
     done
 }
 
-. ${APP_DIR}/scripts/activate
+. ${APP_DIR}/bin/activate
 
+install_requirements . dev-requirements requirements-dev
 for extension in . `ls -d $SRC_DIR/ckanext-*`; do
     install_requirements $extension requirements pip-requirements
 done
-
-install_requirements . requirements-dev
-
 pip install -e .
-
 installed_name=$(grep '^\s*name=' setup.py |sed "s|[^']*'\([-a-zA-Z0-9]*\)'.*|\1|")
 
 # Validate that the extension was installed correctly.
 if ! pip list | grep "$installed_name" > /dev/null; then echo "Unable to find the extension in the list"; exit 1; fi
 
-. ${APP_DIR}/scripts/deactivate
+. ${APP_DIR}/bin/deactivate
