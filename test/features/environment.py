@@ -3,7 +3,6 @@ from behaving import environment as benv
 
 from behaving.web.steps.browser import named_browser
 
-
 # Path to the root of the project.
 ROOT_PATH = os.path.realpath(os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -15,7 +14,7 @@ BASE_URL = 'http://ckan:5000/'
 # URL of remote Chrome instance.
 REMOTE_CHROME_URL = 'http://chrome:4444/wd/hub'
 
-# @see .docker/scripts/init.sh for credentials.
+# @see bin/init.sh for credentials.
 PERSONAS = {
     'SysAdmin': {
         'name': u'admin',
