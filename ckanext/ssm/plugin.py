@@ -136,8 +136,8 @@ class SSMConfigPlugin(SingletonPlugin):
                         Name=parameter_name, WithDecryption=True
                     )['Parameter']['Value']
                 except Exception as e:
-                    LOG.warn("Unable to retrieve %s from SSM, defaulting to [%s]: %s",
-                             parameter_name, default_value, e)
+                    LOG.warning("Unable to retrieve %s from SSM, defaulting to [%s]: %s",
+                                parameter_name, default_value, e)
                     parameter_value = default_value
                 new_value = re.sub(
                     r'[${][{]ssm:' + parameter_name + '(:[^}]*)?[}][}]?',
