@@ -7,7 +7,8 @@ ckanext-ssm-config - Amazon SSM Config CKAN Extension
 Queensland Government has developed this plugin to be used with data.qld.gov.au and publications.qld.gov.au.
 
 #Features
-* Config values with SSM Parameter Store placeholders, ${ssm:/path/to/value}, will be replaced at runtime.
+* Config values with SSM Parameter Store placeholders, ${ssm:/path/to/value} or {{ssm:/path/to/value}}, will be replaced at runtime.
+* Values that cannot be retrieved from the Parameter Store will result in blanks, or a fallback value can be supplied, eg {{ssm:/path/to/value:default_value}}
 * All SSM parameters under a prefix can be automatically converted into config entries.
 
 #Requirements

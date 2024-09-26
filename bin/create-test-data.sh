@@ -2,7 +2,7 @@
 ##
 # Create some example content for extension BDD tests.
 #
-set -e
+set -ex
 
 CKAN_ACTION_URL=${CKAN_SITE_URL}api/action
 CKAN_USER_NAME="${CKAN_USER_NAME:-admin}"
@@ -23,4 +23,3 @@ add_user_if_needed "$CKAN_USER_NAME" "$CKAN_DISPLAY_NAME" "$CKAN_USER_EMAIL"
 ckan_cli sysadmin add "${CKAN_USER_NAME}"
 
 . ${APP_DIR}/bin/deactivate
-
