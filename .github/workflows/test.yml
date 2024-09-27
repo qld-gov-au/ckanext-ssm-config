@@ -35,6 +35,9 @@ jobs:
       CKAN_VERSION: ${{ matrix.ckan-version }}
 
     steps:
+      - name: Preserve $HOME set in the container
+        run: echo HOME=/root >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v4
         timeout-minutes: 2
 
