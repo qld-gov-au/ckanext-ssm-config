@@ -14,7 +14,7 @@ import boto3
 from ckan.plugins import implements, SingletonPlugin, IConfigurer
 
 LOG = getLogger(__name__)
-SSM_PARAMETER_SYNTAX = re.compile(r'[$][{]ssm:(/[-a-zA-Z0-9_./]+)[}]')
+SSM_PARAMETER_SYNTAX = re.compile(r'[${][{]ssm:(/[-a-zA-Z0-9_./]+)(?::([^}]*))?[}][}]?')
 
 
 def get_instance_identity_document():
@@ -123,20 +123,25 @@ class SSMConfigPlugin(SingletonPlugin):
         """
         orig_value = config[key]
         if isinstance(orig_value, six.string_types)\
-                and r'${ssm:' in orig_value:
+                and r'{ssm:' in orig_value:
             matches = SSM_PARAMETER_SYNTAX.findall(orig_value)
             new_value = orig_value
             for match in matches:
+                parameter_name = match[0]
+                default_value = match[1]
                 LOG.debug('Interpolating SSM parameter %s into entry %s',
-                          match, key)
+                          parameter_name, key)
                 try:
                     parameter_value = self.client.get_parameter(
-                        Name=match, WithDecryption=True
+                        Name=parameter_name, WithDecryption=True
                     )['Parameter']['Value']
-                    new_value = new_value.replace(
-                        r'${ssm:' + match + '}',
-                        parameter_value
-                    )
                 except Exception as e:
-                    LOG.warn("Unable to retrieve %s from SSM: %s", match, e)
+                    LOG.warning("Unable to retrieve %s from SSM, defaulting to [%s]: %s",
+                                parameter_name, default_value, e)
+                    parameter_value = default_value
+                new_value = re.sub(
+                    r'[${][{]ssm:' + parameter_name + '(:[^}]*)?[}][}]?',
+                    parameter_value,
+                    new_value
+                )
             config[key] = new_value
