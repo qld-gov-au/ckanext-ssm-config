@@ -26,15 +26,19 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        ckan-version: ["2.10", 2.9, "2.9-py2", 2.8]
+        ckan-version: ["2.10", 2.9]
 
     name: Test on CKAN ${{ matrix.ckan-version }}
     runs-on: ubuntu-latest
-    container: drevops/ci-builder:23.7.0
+    container: drevops/ci-runner:23.12.0
     env:
       CKAN_VERSION: ${{ matrix.ckan-version }}
 
     steps:
+      # Patch https://github.com/actions/runner/issues/863
+      - name: Preserve $HOME set in the container
+        run: echo HOME=/root >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v4
         timeout-minutes: 2
 
