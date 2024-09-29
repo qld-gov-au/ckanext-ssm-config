@@ -1,34 +1,56 @@
-from behave import step
+from behave import when, then
 from behaving.personas.steps import *  # noqa: F401, F403
 from behaving.web.steps import *  # noqa: F401, F403
-from behaving.web.steps.url import when_i_visit_url
 
 
-@step(u'I go to homepage')
+# Monkey-patch Behaving to handle function rename
+from behaving.web.steps import forms
+if not hasattr(forms, 'fill_in_elem_by_name'):
+    forms.fill_in_elem_by_name = forms.i_fill_in_field
+
+
+@when(u'I take a debugging screenshot')
+def debug_screenshot(context):
+    """ Take a screenshot only if debugging is enabled in the persona.
+    """
+    if context.persona and context.persona.get('debug') == 'True':
+        context.execute_steps(u"""
+            When I take a screenshot
+        """)
+
+
+@when(u'I go to homepage')
 def go_to_home(context):
-    when_i_visit_url(context, '/')
-
-
-@step(u'I go to register page')
-def go_to_register_page(context):
     context.execute_steps(u"""
-        When I go to homepage
-        And I click the link with text that contains "Register"
+        When I visit "/"
     """)
 
 
-@step(u'I log in')
-def log_in(context):
-    assert context.persona
+@when(u'I go to register page')
+def go_to_register_page(context):
     context.execute_steps(u"""
         When I go to homepage
-        And I resize the browser to 1024x2048
-        And I click the link with text that contains "Log in"
+        And I press "Register"
+    """)
+
+
+@when(u'I log in')
+def log_in(context):
+    context.execute_steps(u"""
+        When I go to homepage
+        And I expand the browser height
+        And I press "Log in"
         And I log in directly
     """)
 
 
-@step(u'I log in directly')
+@when(u'I expand the browser height')
+def expand_height(context):
+    # Work around x=null bug in Selenium set_window_size
+    context.browser.driver.set_window_rect(x=0, y=0, width=1024, height=3072)
+
+
+@when(u'I log in directly')
 def log_in_directly(context):
     """
     This differs to the `log_in` function above by logging in directly to a page where the user login form is presented
@@ -36,14 +58,14 @@ def log_in_directly(context):
     :return:
     """
 
-    assert context.persona
+    assert context.persona, "A persona is required to log in, found [{}] in context.".format(context.persona)
     context.execute_steps(u"""
         When I attempt to log in with password "$password"
-        Then I should see an element with xpath "//a[@title='Log out']"
+        Then I should see an element with xpath "//*[@title='Log out']/i[contains(@class, 'fa-sign-out')]"
     """)
 
 
-@step(u'I attempt to log in with password "{password}"')
+@when(u'I attempt to log in with password "{password}"')
 def attempt_login(context, password):
     assert context.persona
     context.execute_steps(u"""
@@ -53,23 +75,30 @@ def attempt_login(context, password):
     """.format(password))
 
 
-@step(u'I should see a login link')
+@then(u'I should see the login form')
 def login_link_visible(context):
     context.execute_steps(u"""
         Then I should see an element with xpath "//h1[contains(string(), 'Login')]"
     """)
 
 
-@step(u'I go to dataset page')
+@when(u'I go to dataset page')
 def go_to_dataset_page(context):
-    when_i_visit_url(context, '/dataset')
+    context.execute_steps(u"""
+        When I visit "/dataset"
+    """)
 
 
-@step(u'I go to dataset "{name}"')
+@when(u'I go to dataset "{name}"')
 def go_to_dataset(context, name):
-    when_i_visit_url(context, '/dataset/' + name)
+    context.execute_steps(u"""
+        When I visit "/dataset/{0}"
+        And I take a debugging screenshot
+    """.format(name))
 
 
-@step(u'I go to organisation page')
+@when(u'I go to organisation page')
 def go_to_organisation_page(context):
-    when_i_visit_url(context, '/organization')
+    context.execute_steps(u"""
+        When I visit "/organization"
+    """)
