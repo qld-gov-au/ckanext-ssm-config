@@ -33,7 +33,7 @@ install_requirements () {
 }
 
 . ${APP_DIR}/bin/activate
-
+pip install "setuptools>=44.1.0,<71"
 install_requirements . dev-requirements requirements-dev
 for extension in . `ls -d $SRC_DIR/ckanext-*`; do
     install_requirements $extension requirements pip-requirements
