@@ -134,6 +134,7 @@ commands:
   test-unit:
     usage: Run unit tests.
     cmd: |
+      ahoy title 'Run unit tests'
       ahoy cli 'pytest --ckan-ini=${CKAN_INI} $APP_DIR/ckanext' || \
       [ "${ALLOW_UNIT_FAIL:-0}" -eq 1 ]
 
