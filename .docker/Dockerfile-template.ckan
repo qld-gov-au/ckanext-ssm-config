@@ -2,6 +2,7 @@ FROM ckan/ckan-dev:{CKAN_VERSION}
 
 ARG SITE_URL=http://ckan:5000/
 ENV PYTHON_VERSION={PYTHON_VERSION}
+ENV CKAN_VERSION={CKAN_VERSION}
 ENV CKAN_SITE_URL="${SITE_URL}"
 ENV PYTHON={PYTHON}
 
@@ -10,8 +11,6 @@ WORKDIR "${APP_DIR}"
 ENV DOCKERIZE_VERSION v0.6.1
 RUN wget -O - https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-linux-amd64-${DOCKERIZE_VERSION}.tar.gz \
         | tar -C /usr/local/bin -xzvf -
-
-# Install CKAN.
 
 COPY .docker/test.ini $CKAN_INI
 
