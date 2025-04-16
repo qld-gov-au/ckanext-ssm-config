@@ -19,12 +19,12 @@ jobs:
       - name: Install requirements
         run: pip install flake8 pycodestyle
       - name: Check syntax
-        run: flake8
+        run: flake8 . --count --show-source --statistics
 
   test:
     needs: lint
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         ckan-version: ["2.11", "2.10", 2.9]
 
