@@ -148,7 +148,7 @@ commands:
     usage: Run unit tests.
     cmd: |
       ahoy title 'Run unit tests'
-      ahoy cli 'pytest --ckan-ini=${CKAN_INI} $APP_DIR/ckanext' || \
+      ahoy cli 'pytest --ckan-ini=${CKAN_INI} "${APP_DIR}"/ckanext --cov=ckanext.ssm --cov-branch --cov-report=xml:test/junit/coverage.xml --cov-report=html:test/junit/coverage_html --junit-xml=test/junit/results.xml' -o junit_family=legacy --html=test/junit/report.html --self-contained-html || \
       [ "${ALLOW_UNIT_FAIL:-0}" -eq 1 ]
 
   test-bdd:
@@ -156,7 +156,8 @@ commands:
     cmd: |
       ahoy title 'Run scenario tests'
       ahoy cli "rm -f test/screenshots/*"
-      ahoy cli "behave -k ${*:-test/features}" || \
+      JUNIT_OUTPUT="--junit --junit-directory=test/junit/"
+      ahoy cli "behave $JUNIT_OUTPUT -k ${*:-test/features}" || \
       [ "${ALLOW_BDD_FAIL:-0}" -eq 1 ]
 
   # Utilities.

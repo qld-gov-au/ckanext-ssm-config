@@ -41,7 +41,7 @@ def log_in(context):
 @when(u'I expand the browser height')
 def expand_height(context):
     # Work around x=null bug in Selenium set_window_size
-    context.browser.driver.set_window_rect(x=0, y=0, width=1024, height=3072)
+    context.browser.driver.set_window_rect(x=0, y=0, width=1366, height=3072)
 
 
 @when(u'I log in directly')
@@ -56,8 +56,8 @@ def log_in_directly(context):
         " Have you configured the personas in before_scenario?".format(context.persona)
     context.execute_steps(u"""
         When I attempt to log in with password "$password"
-        Then I should see an element with xpath "//*[@title='Log out']/i[contains(@class, 'fa-sign-out')]"
-    """)
+        Then I should see an element with xpath "//*[@title='Log out' or @data-bs-title='Log out']/i[contains(@class, 'fa-sign-out')]"
+    """)  # noqa: E501
 
 
 @when(u'I attempt to log in with password "{password}"')
