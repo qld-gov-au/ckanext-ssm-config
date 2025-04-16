@@ -3,18 +3,25 @@
 ckanext-ssm-config - Amazon SSM Config CKAN Extension
 ================
 
-#About
+# About
+
+This plugin enables CKAN config options to be retrieved at runtime from AWS Parameter Store.
+
+This is particularly useful for automatically managed environments, so that dynamic or secret values such as the Beaker session key, XLoader job tokens, or Google reCAPTCHA private keys, can be stored securely outside the configuration management system.
+
+Unfortunately the current CKAN architecture does not allow for database passwords to be handled by this plugin, as the password is read from the config before this plugin has the chance to inject it.
+
 Queensland Government has developed this plugin to be used with data.qld.gov.au and publications.qld.gov.au.
 
-#Features
-* Config values with SSM Parameter Store placeholders, ${ssm:/path/to/value} or {{ssm:/path/to/value}}, will be replaced at runtime.
-* Values that cannot be retrieved from the Parameter Store will result in blanks, or a fallback value can be supplied, eg {{ssm:/path/to/value:default_value}}
+# Features
+* Config values with SSM Parameter Store placeholders, `${ssm:/path/to/value}` or `{{ssm:/path/to/value}}`, will be replaced at runtime.
+* Values that cannot be retrieved from the Parameter Store will result in blanks, or a fallback value can be supplied, eg `{{ssm:/path/to/value:default_value}}`
 * All SSM parameters under a prefix can be automatically converted into config entries.
 
-#Requirements
+# Requirements
 * boto3
 
-#Configuration
+# Configuration
 ```
 ckan.plugins = ssm_config
 ```
@@ -63,5 +70,14 @@ proceed on the assumption that permissions are being managed through an EC2 inst
 
 # Development
 
-The 'develop' branch is automatically pushed to dev.data.qld.gov.au and dev.publications.qld.gov.au.
-For deploying to higher environments, releases should be tagged and updated in the CloudFormation templates.
+To install this plugin for development:
+
+1. Activate your Python virtual environment, eg `. /usr/lib/ckan/default/bin/activate`
+
+1. Install the plugin and its dependencies:
+
+    git clone https://github.com/qld-gov-au/ckanext-ssm-config.git
+    cd ckanext-ssm-config
+    pip install -e .
+    pip install -r requirements.txt -r dev-requirements.txt
+
