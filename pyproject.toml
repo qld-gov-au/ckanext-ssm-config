@@ -65,7 +65,7 @@ filterwarnings = [
 ]
 
 [tool.pyright]
-pythonVersion = "3.7"
+pythonVersion = "3.9"
 include = ["ckanext"]
 exclude = [
     "**/test*",

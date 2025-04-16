@@ -152,7 +152,7 @@ class SSMConfigPlugin(plugins.SingletonPlugin):
                         )['Parameter']['Value']
                     except Exception as e:
                         LOG.warning("Unable to retrieve %s from SSM, defaulting to [%s]",
-                                    parameter_name, default_value, exc_info=e)
+                                    parameter_name, default_value, exc_info=True)
                         parameter_value: str = default_value
                     new_value = re.sub(
                         r'[${][{]ssm:' + parameter_name + '(:[^}]*)?[}][}]?',
