@@ -1,7 +1,7 @@
+[![PyPI version](https://img.shields.io/pypi/v/ckanext-ssm-config)](https://pypi.org/project/ckanext-ssm-config/) 
 [![Tests](https://github.com/qld-gov-au/ckanext-ssm-config/actions/workflows/test.yml/badge.svg)](https://github.com/qld-gov-au/ckanext-ssm-config/actions/workflows/test.yml)
-================
-ckanext-ssm-config - Amazon SSM Config CKAN Extension
-================
+
+# ckanext-ssm-config - Amazon SSM Config CKAN Extension
 
 # About
 

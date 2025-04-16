@@ -150,7 +150,7 @@ class SSMConfigPlugin(plugins.SingletonPlugin):
                         parameter_value = self.client.get_parameter(
                             Name=parameter_name, WithDecryption=True
                         )['Parameter']['Value']
-                    except Exception as e:
+                    except Exception:
                         LOG.warning("Unable to retrieve %s from SSM, defaulting to [%s]",
                                     parameter_name, default_value, exc_info=True)
                         parameter_value: str = default_value
