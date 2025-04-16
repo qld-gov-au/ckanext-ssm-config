@@ -93,7 +93,7 @@ To install this plugin for development:
 1. Install the plugin and its dependencies:
     ```
     pip install ckanext-ssm-config
-    pip install -r $SRC_DIR/ckanext-ssm-config/requirements.txt
+    pip install -r $(pip show ckanext-ssm-config | grep Location | awk '{print $2}')/ckanext-ssm-config/requirements.txt
     ```
    developer install
     ```
