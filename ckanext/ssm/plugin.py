@@ -2,6 +2,14 @@
 """ SSM Config CKAN extension.
 This provides Amazon SSM Parameter Store interpolations into config values.
 """
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from types_boto3_ssm import SSMClient
+    from types_boto3_ssm.type_defs import GetParametersByPathResultTypeDef
+else:
+    SSMClient = object
+    GetParametersByPathResultTypeDef = object
 
 import re
 import requests
@@ -11,7 +19,8 @@ from logging import getLogger
 
 import boto3
 
-from ckan.plugins import implements, SingletonPlugin, IConfigurer
+from ckan import plugins
+from ckan.common import CKANConfig
 
 LOG = getLogger(__name__)
 SSM_PARAMETER_SYNTAX = re.compile(r'[${][{]ssm:(/[-a-zA-Z0-9_./]+)(?::([^}]*))?[}][}]?')
@@ -28,16 +37,20 @@ def get_instance_identity_document():
     ).json()
 
 
-class SSMConfigPlugin(SingletonPlugin):
+class SSMConfigPlugin(plugins.SingletonPlugin):
     """Interpolate SSM Parameter Store values into config.
     """
-    implements(IConfigurer, inherit=True)
+    plugins.implements(plugins.IConfigurer, inherit=True)
 
-    def update_config(self, config):
+    client: 'SSMClient|None' = None
+
+    # IConfigurer
+
+    def update_config(self, config: CKANConfig):
         """Replace any values containing SSM references
         """
         if not self._make_client(config):
-            LOG.warn("""Failed to configure SSM client.
+            LOG.warning("""Failed to configure SSM client.
             Parameters will NOT be interpolated from SSM!""")
             return config
         prefix = config.get('ckanext.ssm_config.prefix', None)
@@ -48,7 +61,7 @@ class SSMConfigPlugin(SingletonPlugin):
             self._replace_config_value(config, key)
         return config
 
-    def _make_client(self, config):
+    def _make_client(self, config: CKANConfig) -> 'SSMClient|bool':
         """Construct a Boto3 client for talking to SSM Parameter Store
         """
         region_name = config.get('ckanext.ssm_config.region_name', None)
@@ -60,9 +73,9 @@ class SSMConfigPlugin(SingletonPlugin):
             LOG.debug('region_name not found; attempting to auto-detect')
             try:
                 region_name = get_instance_identity_document()['region']
-            except Exception as e:
-                LOG.warn("""Unable to determine AWS region due to %s;
-                please specify 'ckanext.ssm_config.region_name'.""", e)
+            except Exception:
+                LOG.warning("""Unable to determine AWS region,
+                 please specify 'ckanext.ssm_config.region_name'.""", exc_info=True)
                 return False
 
         LOG.info('Retrieving SSM parameters from region %s', region_name)
@@ -71,11 +84,11 @@ class SSMConfigPlugin(SingletonPlugin):
                                        aws_access_key_id=access_key,
                                        aws_secret_access_key=secret_key)
             return self.client
-        except Exception as e:
-            LOG.error('Failed to initialise SSM Parameter Store client: %s', e)
+        except Exception:
+            LOG.exception('Failed to initialise SSM Parameter Store client')
             return False
 
-    def _populate_config_entries(self, config, prefix, next_token=None):
+    def _populate_config_entries(self, config: CKANConfig, prefix: str, next_token: 'str|None' = None):
         """Retrieve all SSM parameters under 'prefix' and add them
         to the config.
         Slashes in the SSM parameter names will be converted to dots,
@@ -88,60 +101,62 @@ class SSMConfigPlugin(SingletonPlugin):
 
         LOG.debug('Converting all SSM parameters under %s to config entries',
                   prefix)
-        try:
-            if next_token:
-                parameter_search = self.client.get_parameters_by_path(
-                    Path=prefix,
-                    Recursive=True,
-                    WithDecryption=True,
-                    NextToken=next_token
-                )
-            else:
-                parameter_search = self.client.get_parameters_by_path(
-                    Path=prefix,
-                    Recursive=True,
-                    WithDecryption=True
-                )
-            parameters = parameter_search['Parameters']
-        except Exception as e:
-            LOG.warn("Failed to retrieve parameter tree %s: %s", prefix, e)
-            return
+        if self.client:
+            try:
+                if next_token:
+                    parameter_search: GetParametersByPathResultTypeDef = self.client.get_parameters_by_path(
+                        Path=prefix,
+                        Recursive=True,
+                        WithDecryption=True,
+                        NextToken=next_token
+                    )
+                else:
+                    parameter_search: GetParametersByPathResultTypeDef = self.client.get_parameters_by_path(
+                        Path=prefix,
+                        Recursive=True,
+                        WithDecryption=True
+                    )
+                parameters = parameter_search['Parameters']
+            except Exception:
+                LOG.warning("Failed to retrieve parameter tree %s", prefix, exc_info=True)
+                return
 
-        for parameter in parameters:
-            config_key = parameter['Name']\
-                .replace(prefix, '').replace('/', '.')
-            config_value = parameter['Value']
-            LOG.debug("Populating %s from SSM", config_key)
-            config[config_key] = config_value
+            for parameter in parameters:
+                config_key = parameter['Name']\
+                    .replace(prefix, '').replace('/', '.')
+                config_value = parameter['Value']
+                LOG.debug("Populating %s from SSM", config_key)
+                config[config_key] = config_value
 
-        if 'NextToken' in parameter_search:
-            self._populate_config_entries(config, prefix,
-                                          parameter_search['NextToken'])
+            if 'NextToken' in parameter_search:
+                self._populate_config_entries(config, prefix,
+                                              parameter_search['NextToken'])
 
-    def _replace_config_value(self, config, key):
+    def _replace_config_value(self, config: CKANConfig, key: str):
         """Replace any SSM placeholders in a config entry.
         """
         orig_value = config[key]
-        if isinstance(orig_value, six.string_types)\
-                and r'{ssm:' in orig_value:
-            matches = SSM_PARAMETER_SYNTAX.findall(orig_value)
-            new_value = orig_value
-            for match in matches:
-                parameter_name = match[0]
-                default_value = match[1]
-                LOG.debug('Interpolating SSM parameter %s into entry %s',
-                          parameter_name, key)
-                try:
-                    parameter_value = self.client.get_parameter(
-                        Name=parameter_name, WithDecryption=True
-                    )['Parameter']['Value']
-                except Exception as e:
-                    LOG.warning("Unable to retrieve %s from SSM, defaulting to [%s]: %s",
-                                parameter_name, default_value, e)
-                    parameter_value = default_value
-                new_value = re.sub(
-                    r'[${][{]ssm:' + parameter_name + '(:[^}]*)?[}][}]?',
-                    parameter_value,
-                    new_value
-                )
-            config[key] = new_value
+        if self.client:
+            if isinstance(orig_value, six.string_types)\
+                    and r'{ssm:' in orig_value:
+                matches = SSM_PARAMETER_SYNTAX.findall(orig_value)
+                new_value = orig_value
+                for match in matches:
+                    parameter_name = match[0]
+                    default_value = match[1]
+                    LOG.debug('Interpolating SSM parameter %s into entry %s',
+                              parameter_name, key)
+                    try:
+                        parameter_value = self.client.get_parameter(
+                            Name=parameter_name, WithDecryption=True
+                        )['Parameter']['Value']
+                    except Exception as e:
+                        LOG.warning("Unable to retrieve %s from SSM, defaulting to [%s]",
+                                    parameter_name, default_value, exc_info=e)
+                        parameter_value: str = default_value
+                    new_value = re.sub(
+                        r'[${][{]ssm:' + parameter_name + '(:[^}]*)?[}][}]?',
+                        parameter_value,
+                        new_value
+                    )
+                config[key] = new_value

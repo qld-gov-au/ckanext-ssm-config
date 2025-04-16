@@ -18,8 +18,24 @@ Queensland Government has developed this plugin to be used with data.qld.gov.au 
 * Values that cannot be retrieved from the Parameter Store will result in blanks, or a fallback value can be supplied, eg `{{ssm:/path/to/value:default_value}}`
 * All SSM parameters under a prefix can be automatically converted into config entries.
 
-# Requirements
+
+## Requirements
+
 * boto3
+* 
+Compatibility with core CKAN versions:
+
+  | CKAN version | Compatibility       |
+  |--------------|---------------------|
+  | 2.7          | no longer supported |
+  | 2.8          | no longer supported |
+  | 2.9          | yes                 |
+  | 2.10         | yes                 |
+  | 2.11         | yes                 |
+  | master       | yes*                |
+
+*Testing occurs against 'master' in `non-failing` mode, do verify test summary.
+At of April 2025 it was passing, so we are confident it is 2.12 compatible.
 
 # Configuration
 ```
@@ -75,9 +91,15 @@ To install this plugin for development:
 1. Activate your Python virtual environment, eg `. /usr/lib/ckan/default/bin/activate`
 
 1. Install the plugin and its dependencies:
-
+    ```
+    pip install ckanext-ssm-config
+    pip install -r $SRC_DIR/ckanext-ssm-config/requirements.txt
+    ```
+   developer install
+    ```
     git clone https://github.com/qld-gov-au/ckanext-ssm-config.git
     cd ckanext-ssm-config
     pip install -e .
     pip install -r requirements.txt -r dev-requirements.txt
+   ```
 
