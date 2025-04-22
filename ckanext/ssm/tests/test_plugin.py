@@ -11,11 +11,6 @@ class TestPlugin(object):
     def setup_method(self):
         # configure a fake SSM Parameter Store to talk to
         self.plugin = SSMConfigPlugin()
-        self.real_client = self.plugin.client
-        self.plugin.client = MagicMock()
-
-    def teardown_method(self):
-        self.plugin.client = self.real_client
 
     @pytest.mark.parametrize('original_value,expected_value', [
         ('${ssm:/test}', 'foo'),
@@ -27,9 +22,10 @@ class TestPlugin(object):
     def test_insert_parameter(self, original_value, expected_value):
         # test succession insertions of parameter
         config = {'test_parameter': original_value}
-        self.plugin.client.get_parameter.return_value = {'Parameter': {'Value': 'foo'}}
+        client = MagicMock()
+        client.get_parameter.return_value = {'Parameter': {'Value': 'foo'}}
 
-        self.plugin._replace_config_value(config, 'test_parameter')
+        self.plugin._replace_config_value(client, config, 'test_parameter')
 
         assert config.get('test_parameter') == expected_value
 
@@ -47,8 +43,9 @@ class TestPlugin(object):
     def test_insert_missing_parameter(self, original_value, expected_value):
         # test insertions when parameter was not successfully retrieved
         config = {'test_parameter': original_value}
-        self.plugin.client.get_parameter.side_effect = Exception("unit test")
+        client = MagicMock()
+        client.get_parameter.side_effect = Exception("unit test")
 
-        self.plugin._replace_config_value(config, 'test_parameter')
+        self.plugin._replace_config_value(client, config, 'test_parameter')
 
         assert config.get('test_parameter') == expected_value
