@@ -1,4 +1,4 @@
-[![PyPI version](https://img.shields.io/pypi/v/ckanext-ssm-config)](https://pypi.org/project/ckanext-ssm-config/) 
+[![PyPI version](https://img.shields.io/pypi/v/ckanext-ssm-config)](https://pypi.org/project/ckanext-ssm-config/)
 [![Tests](https://github.com/qld-gov-au/ckanext-ssm-config/actions/workflows/test.yml/badge.svg)](https://github.com/qld-gov-au/ckanext-ssm-config/actions/workflows/test.yml)
 
 # ckanext-ssm-config - Amazon SSM Config CKAN Extension
@@ -22,7 +22,7 @@ Queensland Government has developed this plugin to be used with data.qld.gov.au 
 ## Requirements
 
 * boto3
-* 
+*
 Compatibility with core CKAN versions:
 
   | CKAN version | Compatibility       |
@@ -91,11 +91,6 @@ To install this plugin for development:
 1. Activate your Python virtual environment, eg `. /usr/lib/ckan/default/bin/activate`
 
 1. Install the plugin and its dependencies:
-    ```
-    pip install ckanext-ssm-config
-    pip install -r $(pip show ckanext-ssm-config | grep Location | awk '{print $2}')/ckanext-ssm-config/requirements.txt
-    ```
-   developer install
     ```
     git clone https://github.com/qld-gov-au/ckanext-ssm-config.git
     cd ckanext-ssm-config

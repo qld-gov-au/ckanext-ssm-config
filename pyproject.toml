@@ -10,7 +10,12 @@ classifiers = [ "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",]
 keywords = [ "CKAN", "extension", "aws param store", "aws", "param store"]
-dependencies = [ "typing_extensions",]
+dependencies = [
+    "typing_extensions",
+    "boto3>=1.4.4",
+    "types-boto3[ssm]>=1.37.34",
+    "six>=1.11.0",
+]
 authors = [
     {name = "ThrawnCA", email = "carl.antuar@smartservice.qld.gov.au"},
     {name = "Queensland Online", email = "qol.development@smartservice.qld.gov.au"},
