@@ -1,0 +1,32 @@
+version: 1
+groups:
+  - annotation: ckanext-ssm-config settings
+    options:
+      - key: ckanext.ssm_config.region_name
+        example: ap-southeast-2
+        description: |
+          If ``region_name`` is not configured, the extension will attempt to query AWS metadata to determine
+          the region of the machine where CKAN is running.
+        required: false
+      - key: ckanext.ssm_config.prefix
+        default: /CKAN/config/
+        example: /CKAN/config/
+        description: |
+          If ``prefix`` is configured, the extension will attempt to load all parameters under this prefix as
+          config entries, with slashes being converted to dots. For example, if the prefix is set to
+          `` /CKAN/config/``, and the SSM Parameter Store contains the key ``/CKAN/config/sqlalchemy/url``, then
+          the extension will populate ``config['sqlalchemy.url']`` with the SSM value.
+        required: false
+      - key: ckanext.ssm_config.aws_access_key_id
+        example: "az12341231"
+        description: |
+          If ``aws_access_key_id`` and ``aws_secret_access_key`` are not configured, the extension will
+          proceed on the assumption that permissions are being managed through an EC2 instance role.
+        required: false
+      - key: ckanext.ssm_config.aws_secret_access_key
+        example: "az12341231"
+        description: |
+          If ``aws_access_key_id`` and ``aws_secret_access_key`` are not configured, the extension will
+          proceed on the assumption that permissions are being managed through an EC2 instance role.
+        required: false
+
