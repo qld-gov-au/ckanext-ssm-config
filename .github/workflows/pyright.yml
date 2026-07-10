@@ -4,8 +4,7 @@ on:
   workflow_call:
   workflow_dispatch:
 env:
-  NODE_VERSION: '18'
-  PYTHON_VERSION: '3.9'
+  NODE_VERSION: '24'
 
 permissions:
   contents: read
@@ -16,12 +15,16 @@ jobs:
       matrix:
         include: #ckan-image see https://github.com/ckan/ckan-docker-base, ckan-version controls other image tags
           - ckan-version: "dev-v2.12"
+            python-version: "3.12"
             experimental: false
           - ckan-version: "ckan-2.11.5"
+            python-version: "3.9"
             experimental: false
           - ckan-version: "ckan-2.10.7"
+            python-version: "3.9"
             experimental: false
           - ckan-version: "master"
+            python-version: "3.12"
             experimental: true  # master is unstable, good to know if we are compatible or not
       fail-fast: false
 
@@ -39,7 +42,7 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ matrix.python-version }}
           cache: 'pip'
         continue-on-error: ${{ matrix.experimental }}
       - uses: actions/setup-node@v6
