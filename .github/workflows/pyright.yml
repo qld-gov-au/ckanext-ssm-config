@@ -18,7 +18,7 @@ jobs:
             python-version: "3.12"
             experimental: false
           - ckan-version: "ckan-2.11.5"
-            python-version: "3.9"
+            python-version: "3.10"
             experimental: false
           - ckan-version: "ckan-2.10.7"
             python-version: "3.9"
