@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CKAN_VERSION: ${{ matrix.ckan-version }}
-      SOLR_VERSION: ${{ matrix.solr-version }}
 
     steps:
       - name: Install Ahoy and dependencies
