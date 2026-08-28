@@ -157,7 +157,7 @@ commands:
       ahoy title 'Run scenario tests'
       ahoy cli "rm -f test/screenshots/*"
       JUNIT_OUTPUT="--junit --junit-directory=test/junit/"
-      ahoy cli "behave $JUNIT_OUTPUT -k ${*:-test/features}" || \
+      ahoy cli "behave $JUNIT_OUTPUT --no-skipped ${*:-test/features}" || \
       [ "${ALLOW_BDD_FAIL:-0}" -eq 1 ]
 
   # Utilities.
