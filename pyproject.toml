@@ -3,12 +3,14 @@ requires = [ "setuptools",]
 
 [project]
 name = "ckanext-ssm-config"
-version = "0.1.1"
+version = "0.1.2"
 description = "Imports Amazon SSM Parameter Store values into CKAN config"
 classifiers = [ "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",]
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",]
 keywords = [ "CKAN", "extension", "aws param store", "aws", "param store"]
 dependencies = [
     "typing_extensions",
